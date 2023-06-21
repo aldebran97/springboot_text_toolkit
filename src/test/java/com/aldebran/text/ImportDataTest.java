@@ -27,7 +27,11 @@ public class ImportDataTest {
         System.out.printf("add %s %s %n", id, title);
         int count = 0;
         for (Object segment : jsonObject.getJSONArray("segments")) {
-            String text = title + " " + segment.toString();
+            String segmentS = segment.toString();
+            if (!segmentS.startsWith("=")) {
+                segmentS = String.format("==%s 基本介绍简介 ==%s", title, segmentS);
+            }
+            String text = title + " " + segmentS;
             String thisId = id + "_" + count;
             lib.addText(text, title, thisId);
             count++;
@@ -39,7 +43,8 @@ public class ImportDataTest {
 
     public void importWikiJsons(File jsonsFolder, File libsFolder, String libName) throws Exception {
         TextSimilaritySearch lib = new TextSimilaritySearch(
-                libName, 3, 0.5, 2, 0.01, 10);
+                libName, 1, 1,
+                0.5, 2, 0.01, 5);
         int c = 0;
         for (File file : jsonsFolder.listFiles()) {
             if (file.getName().endsWith(".json") && !file.getName().startsWith(".")) {
@@ -70,16 +75,19 @@ public class ImportDataTest {
         long loadEd = System.currentTimeMillis();
         System.out.println("load time: " + (loadEd - loadSt) / 1000.0 + "s");
 
-        lib.regenerateArgs(3, 0.5, 0.01, 5);
+        lib.regenerateArgs(1, 1,
+                0.5, 0.01, 5);
 
         List<SimilaritySearchResult> resultList = null;
         int times = 1;
 
         long searchSt = System.currentTimeMillis();
         for (int i = 0; i < times; i++) {
-//            resultList = lib.similaritySearch("木卫二(欧罗巴)是直径和质量第四大，公转轨道距离木星第六近的一颗。介绍木卫二", 10);
+//            resultList = lib.similaritySearch("木卫二(又名欧罗巴)是木星的天然卫星之一，是直径和质量第四大，公转轨道距离木星第六近的一颗，" +
+//                    "介绍木卫二", 30);
 //            resultList = lib.similaritySearch("介绍岳飞写的《满江红》(怒发冲冠凭栏处)", 10);
-            resultList = lib.similaritySearch("孟浩然的诗 春眠不觉晓", 10);
+//            resultList = lib.similaritySearch("孟浩然的诗 春晓 ", 10);
+            resultList = lib.similaritySearch("介绍苏轼写的念奴娇示壁怀古", 10);
         }
         long searchEd = System.currentTimeMillis();
         for (SimilaritySearchResult similaritySearchResult : resultList) {

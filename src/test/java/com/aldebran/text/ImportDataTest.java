@@ -38,7 +38,7 @@ public class ImportDataTest {
 
     public void importWikiJsons(File jsonsFolder, File libsFolder, String libName) throws Exception {
         TextSimilaritySearch lib = new TextSimilaritySearch(
-                libName, 1, 0.5, 2, 0.3);
+                libName, 1, 0.5, 2, 0.3, 10);
         int c = 0;
         for (File file : jsonsFolder.listFiles()) {
             if (file.getName().endsWith(".json") && !file.getName().startsWith(".")) {
@@ -70,6 +70,7 @@ public class ImportDataTest {
         System.out.println("load time: " + (loadEd - loadSt) / 1000.0 + "s");
 
         lib.decayRate = 0.01;
+        lib.growthRate = 10;
         long searchSt = System.currentTimeMillis();
         List<SimilaritySearchResult> resultList = lib.similaritySearch("木卫二(欧罗巴)是直径和质量第四大，公转轨道距离木星第六近的一颗。介绍木卫二", 10);
         long searchEd = System.currentTimeMillis();

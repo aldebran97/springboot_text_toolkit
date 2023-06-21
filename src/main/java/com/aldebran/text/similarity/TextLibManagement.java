@@ -3,6 +3,7 @@ package com.aldebran.text.similarity;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * 相似库管理工具
@@ -92,5 +93,9 @@ public class TextLibManagement {
 
     public Text getTextById(String libName, String id) {
         return nameLibMap.get(libName).queryById(id);
+    }
+
+    public boolean isLibLoaded(String libName) {
+        return nameLibMap.containsKey(libName);
     }
 }

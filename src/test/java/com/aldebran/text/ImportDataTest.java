@@ -28,12 +28,14 @@ public class ImportDataTest {
         int count = 0;
         for (Object segment : jsonObject.getJSONArray("segments")) {
             String segmentS = segment.toString();
+            double w = 0.5;
             if (!segmentS.startsWith("=")) {
-                segmentS = String.format("==%s 基本介绍简介 ==%s", title, segmentS);
+                segmentS = String.format("==基本信息== %s", segmentS);
+                w = 1;
             }
             String text = title + " " + segmentS;
             String thisId = id + "_" + count;
-            lib.addText(text, title, thisId);
+            lib.addText(text, title, thisId, w);
             count++;
 //            System.out.printf("add %s %s %s %n", thisId, title, text);
         }
@@ -83,11 +85,11 @@ public class ImportDataTest {
 
         long searchSt = System.currentTimeMillis();
         for (int i = 0; i < times; i++) {
-//            resultList = lib.similaritySearch("木卫二(又名欧罗巴)是木星的天然卫星之一，是直径和质量第四大，公转轨道距离木星第六近的一颗，" +
+//            resultList = lib.similaritySearch("木卫二(又名欧罗巴)是木星天然卫星中直径和质量第四大，公转轨道距离木星第六近的一颗。" +
 //                    "介绍木卫二", 30);
 //            resultList = lib.similaritySearch("介绍岳飞写的《满江红》(怒发冲冠凭栏处)", 10);
 //            resultList = lib.similaritySearch("孟浩然的诗 春晓 ", 10);
-            resultList = lib.similaritySearch("介绍苏轼写的念奴娇示壁怀古", 10);
+            resultList = lib.similaritySearch("介绍苏轼写的念奴娇赤壁怀古", 10);
         }
         long searchEd = System.currentTimeMillis();
         for (SimilaritySearchResult similaritySearchResult : resultList) {

@@ -54,6 +54,10 @@ public class TextSimilaritySearch implements Serializable {
                 new ReplaceInfo("快乐",
                         Pattern.compile("(高兴)|(兴高采烈)"),
                         Pattern.compile("(高兴)|(兴高采烈)")));
+        replaceInfos.add(
+                new ReplaceInfo("介绍",
+                        Pattern.compile("(简介)|((基本|主要)?信息)"),
+                        Pattern.compile("(简介)|((基本|主要)?信息)")));
         // lots of
     }
 
@@ -113,10 +117,11 @@ public class TextSimilaritySearch implements Serializable {
     }
 
 
-    public void addText(String text, String title, String id) {
+    public void addText(String text, String title, String id, double weight) {
         Text textObj = textProcess(text);
         textObj.id = id;
         textObj.title = title;
+        textObj.contentWeight = weight;
         List<String> grams = nGram(textObj, n);
         for (String gram : grams) {
             Set<String> set = gramTextIdsMap.get(gram);
@@ -314,9 +319,9 @@ public class TextSimilaritySearch implements Serializable {
 
             contentAvgIdf = contentIdfSum / grams.size();
 
-            contentScore = contentAvgIdf;
+            contentScore = contentAvgIdf * contentWeightK(textObj.contentWeight);
 
-            // contentScore期望是1*avg_idf
+            // contentScore期望是1*1*avg_idf
 
             // 基于标题
             Text titleObj = textProcess(textObj.title);
@@ -369,6 +374,13 @@ public class TextSimilaritySearch implements Serializable {
 
     private double score(double sum) {
         return 1.0 / (a * sum + b) + 1;
+    }
+
+    private double contentWeightK(double weight) {
+        // (0.5,1) (1,3)
+        // k = 4, b = -1
+        // 可以采用非线性
+        return weight * 4 - 1;
     }
 
     public int wordsCount() {

@@ -47,7 +47,7 @@ public class ImportDataTest {
     public void importWikiJsons(File jsonsFolder, File libsFolder, String libName) throws Exception {
         TextSimilaritySearch lib = new TextSimilaritySearch(
                 libName, 1, 1,
-                0.5, 2, 0.01, 5);
+                0.5, 2, 20, 20, 0.9);
         int c = 0;
         for (File file : jsonsFolder.listFiles()) {
             if (file.getName().endsWith(".json") && !file.getName().startsWith(".")) {
@@ -79,7 +79,9 @@ public class ImportDataTest {
         System.out.println("load time: " + (loadEd - loadSt) / 1000.0 + "s");
 
         lib.regenerateArgs(1, 1,
-                0.5, 0.01, 5);
+                0.5, 20, 20, 0.9);
+
+        // growRate为了处理小IDF的问题
 
         List<SimilaritySearchResult> resultList = null;
         int times = 1;
@@ -90,7 +92,8 @@ public class ImportDataTest {
 //                    "介绍木卫二", 30);
 //            resultList = lib.similaritySearch("介绍岳飞写的《满江红》(怒发冲冠凭栏处)", 10);
 //            resultList = lib.similaritySearch("孟浩然的诗 春晓 ", 10);
-            resultList = lib.similaritySearch("介绍苏轼写的念奴娇赤壁怀古", 10);
+//            resultList = lib.similaritySearch("介绍苏轼写的念奴娇赤壁怀古", 10);
+            resultList = lib.similaritySearch("春眠不觉晓 处处闻啼鸟 ", 10);
         }
         long searchEd = System.currentTimeMillis();
         for (SimilaritySearchResult similaritySearchResult : resultList) {

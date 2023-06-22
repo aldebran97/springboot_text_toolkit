@@ -18,12 +18,16 @@ import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
-@RestController("/lib")
+@RestController()
+@RequestMapping("/lib")
 public class LibController {
 
     @Autowired
     private TextLibManagement textLibManagement;
 
+    public LibController(){
+        System.out.println("LibController!!!");
+    }
 
     @RequestMapping(value = "/similaritySearch", method = {RequestMethod.POST})
     public List<SimilaritySearchResult> similaritySearch(
@@ -39,5 +43,10 @@ public class LibController {
         return textLibManagement.similaritySearch(libNames,
                 reqBodyJson.getString("text"),
                 reqBodyJson.getInteger("topK"));
+    }
+
+    @RequestMapping("/test")
+    public String test(){
+        return  "Hello";
     }
 }

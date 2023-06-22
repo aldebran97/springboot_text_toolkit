@@ -139,6 +139,11 @@ public class TextSimilaritySearch implements Serializable {
     public void update() {
         ac.update();
         avgIdf = getAvgIdf();
+        regenerateArgs(this.criticalContentHitCountPerGram,
+                this.criticalTitleHitCountPerGram,
+                this.criticalScore,
+                this.decayRate,
+                this.growthRate);
     }
 
 

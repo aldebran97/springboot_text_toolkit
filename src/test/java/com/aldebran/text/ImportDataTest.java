@@ -3,6 +3,7 @@ package com.aldebran.text;
 import cn.hutool.core.io.FileUtil;
 import com.aldebran.text.ac.AC;
 import com.aldebran.text.similarity.SimilaritySearchResult;
+import com.aldebran.text.similarity.TextLibManagement;
 import com.aldebran.text.similarity.TextSimilaritySearch;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -99,6 +100,15 @@ public class ImportDataTest {
         System.out.println("texts count: " + lib.textsCount());
         System.out.println("grams count: " + lib.wordsCount());
 
+    }
+
+    @Test
+    public void tryManager() throws Exception {
+        TextLibManagement textLibManagement = new TextLibManagement(new File("/Users/aldebran/custom/data/wiki/libs"));
+        textLibManagement.loadLibFromDisk("wiki_interesting_lib");
+
+        System.out.println(textLibManagement.similaritySearch("wiki_interesting_lib",
+                "孟浩然的诗 春晓", 10));
     }
 
     @Test

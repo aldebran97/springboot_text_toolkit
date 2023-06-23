@@ -79,7 +79,7 @@ public class ImportDataTest {
         System.out.println("load time: " + (loadEd - loadSt) / 1000.0 + "s");
 
         lib.regenerateArgs(1, 1,
-                0.5, 20, 20, 0.9);
+                0.5, 200, 20, 0.1);
 
         // growRate为了处理小IDF的问题
 
@@ -90,10 +90,11 @@ public class ImportDataTest {
         for (int i = 0; i < times; i++) {
 //            resultList = lib.similaritySearch("木卫二(又名欧罗巴)是木星天然卫星中直径和质量第四大，公转轨道距离木星第六近的一颗。" +
 //                    "介绍木卫二", 30);
-//            resultList = lib.similaritySearch("介绍岳飞写的《满江红》(怒发冲冠凭栏处)", 10);
+            resultList = lib.similaritySearch("介绍岳飞写的《满江红》(怒发冲冠凭栏处)", 10);
 //            resultList = lib.similaritySearch("孟浩然的诗 春晓 ", 10);
 //            resultList = lib.similaritySearch("介绍苏轼写的念奴娇赤壁怀古", 10);
-            resultList = lib.similaritySearch("春眠不觉晓 处处闻啼鸟 ", 10);
+//            resultList = lib.similaritySearch("春眠不觉晓 处处闻啼鸟 ", 10);
+//            resultList = lib.similaritySearch("孟浩然 春眠不觉晓 处处闻啼鸟 ", 10);
         }
         long searchEd = System.currentTimeMillis();
         for (SimilaritySearchResult similaritySearchResult : resultList) {

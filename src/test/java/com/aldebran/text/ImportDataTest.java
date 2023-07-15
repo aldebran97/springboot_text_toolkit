@@ -146,7 +146,7 @@ public class ImportDataTest {
         // growRate为了处理小IDF的问题
 
         List<SimilaritySearchResult> resultList = null;
-        int times = 1;
+        int times = 20;
 
         long searchSt = System.currentTimeMillis();
         for (int i = 0; i < times; i++) {
@@ -166,7 +166,8 @@ public class ImportDataTest {
         }
         System.out.println("search time: " + (searchEd - searchSt) / 1000.0 / times + "s");
         System.out.println("texts count: " + lib.textsCount());
-        System.out.println("content grams count: " + lib.contentWordsCount());
+        System.out.println("content words count: " + lib.contentWordsCount());
+        System.out.println("grams sum: " + (lib.contentGramsCountSum + lib.titleGramsCountSum));
 
     }
 

@@ -14,7 +14,11 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.PriorityQueue;
+import java.util.stream.Collectors;
 
 public class ImportDataTest {
 
@@ -60,27 +64,51 @@ public class ImportDataTest {
     }
 
     public void importWikiJsons(File jsonsFolder, File libsFolder, String libName) throws Exception {
-        long t1 = System.currentTimeMillis();
+
         TextSimilaritySearch lib = new TextSimilaritySearch(
                 2, 2,
                 0.5, 2000,
                 200, 0.5, 2,
                 libName);
         int c = 0;
+        int maxCount = 80 * 10000;
+
+        PriorityQueue<File> queue = new PriorityQueue<>(new Comparator<File>() {
+            @Override
+            public int compare(File o1, File o2) {
+                return o1.length() < o2.length() ? -1 : 1;
+            }
+        });
+
         for (File file : jsonsFolder.listFiles()) {
+            queue.add(file);
+            System.out.println(file);
+        }
+
+        long t1 = System.currentTimeMillis();
+
+        while (!queue.isEmpty()) {
+            File file = queue.remove();
             if (file.getName().endsWith(".json") && !file.getName().startsWith(".")) {
-                System.out.println(c);
+                System.out.println(c + " " + lib.textsCount());
                 c += importJson(file, lib);
             }
+            if (lib.textsCount() > maxCount) break;
         }
+
         long t2 = System.currentTimeMillis();
         lib.update();
         long t3 = System.currentTimeMillis();
         System.out.println("入库文章数量: " + lib.textsCount());
         System.out.println("插入文章所用时间：" + (t2 - t1) / 1000.0);
         System.out.println("刷新索引所用时间：" + (t3 - t2) / 1000.0);
+        System.gc();
 
         TextSimilaritySearch.save(lib, new File(libsFolder, libName));
+        long t4 = System.currentTimeMillis();
+        System.out.println("持久化所用时间：" + (t4 - t3) / 1000.0);
+        long usedMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+        System.out.println("used memory: " + usedMemory);
     }
 
     public int importJson(File inFile, TextSimilaritySearch lib) throws Exception {
@@ -104,6 +132,7 @@ public class ImportDataTest {
             String thisId = id + "_" + count;
             lib.addText(text, title, thisId, w);
             count++;
+
 //            System.out.printf("add %s %s %s %n", thisId, title, text);
         }
         return 1;
@@ -139,7 +168,7 @@ public class ImportDataTest {
     public void tryWikiLibLoadSearch() throws Exception {
         long loadSt = System.currentTimeMillis();
         TextSimilaritySearch lib = TextSimilaritySearch.load(
-                new File("D:/user_dir/data/knowledge_libs", "wiki_interesting_lib"));
+                new File("D:/user_dir/data/knowledge_libs", "big_data_test"));
         long loadEd = System.currentTimeMillis();
         System.out.println("load time: " + (loadEd - loadSt) / 1000.0 + "s");
 
@@ -151,7 +180,7 @@ public class ImportDataTest {
         // growRate为了处理小IDF的问题
 
         List<SimilaritySearchResult> resultList = null;
-        int times = 20;
+        int times = 500;
 
         long searchSt = System.currentTimeMillis();
         for (int i = 0; i < times; i++) {
@@ -174,6 +203,8 @@ public class ImportDataTest {
         System.out.println("statistics: " + lib.getStatistics());
         // 未去重的Grams Count
         System.out.println("grams sum: " + (lib.contentGramsCountSum + lib.titleGramsCountSum));
+        long usedMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+        System.out.println("used memory: " + usedMemory);
 
     }
 

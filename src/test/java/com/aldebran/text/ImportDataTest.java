@@ -45,8 +45,8 @@ public class ImportDataTest {
 
     @Test
     public void tryImportPoems() throws Exception {
-        importPoems(new File("C:/user_dir/data/poem"),
-                new File("C:/user_dir/data/knowledge_libs"), "poems");
+        importPoems(new File("d:/user_dir/data/poem"),
+                new File("d:/user_dir/data/knowledge_libs"), "poems");
     }
 
     @Test
@@ -60,6 +60,7 @@ public class ImportDataTest {
     }
 
     public void importWikiJsons(File jsonsFolder, File libsFolder, String libName) throws Exception {
+        long t1 = System.currentTimeMillis();
         TextSimilaritySearch lib = new TextSimilaritySearch(
                 2, 2,
                 0.5, 2000,
@@ -72,8 +73,12 @@ public class ImportDataTest {
                 c += importJson(file, lib);
             }
         }
+        long t2 = System.currentTimeMillis();
         lib.update();
+        long t3 = System.currentTimeMillis();
         System.out.println("入库文章数量: " + lib.textsCount());
+        System.out.println("插入文章所用时间：" + (t2 - t1) / 1000.0);
+        System.out.println("刷新索引所用时间：" + (t3 - t2) / 1000.0);
 
         TextSimilaritySearch.save(lib, new File(libsFolder, libName));
     }
@@ -107,8 +112,8 @@ public class ImportDataTest {
 
     @Test
     public void tryImportWikiJsons() throws Exception {
-        importWikiJsons(new File("C:/user_dir/data/wiki_data/wiki_interesting_segment"),
-                new File("C:/user_dir/data/knowledge_libs"), "wiki_interesting_lib");
+        importWikiJsons(new File("D:/user_dir/data/wiki_data/big_data_test_segment"),
+                new File("D:/user_dir/data/knowledge_libs"), "big_data_test");
 
     }
 
@@ -116,7 +121,7 @@ public class ImportDataTest {
     public void acTest() throws Exception {
         long loadSt = System.currentTimeMillis();
         TextSimilaritySearch lib = TextSimilaritySearch.load(
-                new File("/Users/aldebran/custom/data/wiki/libs", "wiki_jsons1_lib"));
+                new File("D:/user_dir/data/knowledge_libs", "wiki_interesting_lib"));
         long loadEd = System.currentTimeMillis();
         System.out.println("load time: " + (loadEd - loadSt) / 1000.0 + "s");
         List<AC.MatchResult> mrs = null;
@@ -134,7 +139,7 @@ public class ImportDataTest {
     public void tryWikiLibLoadSearch() throws Exception {
         long loadSt = System.currentTimeMillis();
         TextSimilaritySearch lib = TextSimilaritySearch.load(
-                new File("C:/user_dir/data/knowledge_libs", "wiki_interesting_lib"));
+                new File("D:/user_dir/data/knowledge_libs", "wiki_interesting_lib"));
         long loadEd = System.currentTimeMillis();
         System.out.println("load time: " + (loadEd - loadSt) / 1000.0 + "s");
 
@@ -158,6 +163,7 @@ public class ImportDataTest {
 //            resultList = lib.similaritySearch("介绍苏轼写的念奴娇赤壁怀古", 15);
 //            resultList = lib.similaritySearch("春眠不觉晓 处处闻啼鸟 ", 15);
 //            resultList = lib.similaritySearch("孟浩然 春眠不觉晓 处处闻啼鸟 ", 15);
+//            resultList = lib.similaritySearch("春晓 春眠不觉晓 处处闻啼鸟 ", 15);
 //            resultList = lib.similaritySearch("金星的质量 ", 10);
         }
         long searchEd = System.currentTimeMillis();
@@ -165,8 +171,8 @@ public class ImportDataTest {
             System.out.println(similaritySearchResult);
         }
         System.out.println("search time: " + (searchEd - searchSt) / 1000.0 / times + "s");
-        System.out.println("texts count: " + lib.textsCount());
-        System.out.println("content words count: " + lib.contentWordsCount());
+        System.out.println("statistics: " + lib.getStatistics());
+        // 未去重的Grams Count
         System.out.println("grams sum: " + (lib.contentGramsCountSum + lib.titleGramsCountSum));
 
     }

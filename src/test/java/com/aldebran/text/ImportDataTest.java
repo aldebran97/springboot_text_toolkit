@@ -24,10 +24,14 @@ public class ImportDataTest {
 
     public void importPoems(File poemsFolder, File libsFolder, String libName) throws IOException {
         TextSimilaritySearch lib = new TextSimilaritySearch(
-                1.5, 1.5,
-                0.55, 2000,
-                200, 0.5, 2,
-                "poems");
+                1.5,
+                1.5,
+                0.51,
+                1,
+                2,
+                8,
+                50,
+                2, "poems");
 
         for (File file : poemsFolder.listFiles()) {
             String title = file.getName().replace(".txt", "");
@@ -42,9 +46,9 @@ public class ImportDataTest {
         System.out.println("texts count: " + lib.textsCount());
         TextSimilaritySearch.save(lib, new File(libsFolder, libName));
 
-        System.out.println(lib.similaritySearch("介绍古诗《使至塞上》", 5));
+//        System.out.println(lib.similaritySearch("介绍古诗《使至塞上》", 5));
 
-//        System.out.println(lib.similaritySearch("介绍 诗经 蒹葭", 5));
+        System.out.println(lib.similaritySearch("介绍 诗经 蒹葭", 5));
     }
 
     @Test
@@ -66,9 +70,14 @@ public class ImportDataTest {
     public void importWikiJsons(File jsonsFolder, File libsFolder, String libName) throws Exception {
 
         TextSimilaritySearch lib = new TextSimilaritySearch(
-                2, 2,
-                0.5, 2000,
-                200, 0.5, 2,
+                3,
+                2,
+                0.5,
+                1,
+                10,
+                8,
+                200,
+                2,
                 libName);
         int c = 0;
         int maxCount = 80 * 10000;
@@ -82,7 +91,7 @@ public class ImportDataTest {
 
         for (File file : jsonsFolder.listFiles()) {
             queue.add(file);
-            System.out.println(file);
+//            System.out.println(file);
         }
 
         long t1 = System.currentTimeMillis();
@@ -90,7 +99,7 @@ public class ImportDataTest {
         while (!queue.isEmpty()) {
             File file = queue.remove();
             if (file.getName().endsWith(".json") && !file.getName().startsWith(".")) {
-                System.out.println(c + " " + lib.textsCount());
+//                System.out.println(c + " " + lib.textsCount());
                 c += importJson(file, lib);
             }
             if (lib.textsCount() > maxCount) break;
@@ -102,13 +111,13 @@ public class ImportDataTest {
         System.out.println("入库文章数量: " + lib.textsCount());
         System.out.println("插入文章所用时间：" + (t2 - t1) / 1000.0);
         System.out.println("刷新索引所用时间：" + (t3 - t2) / 1000.0);
-        System.gc();
+//        System.gc();
 
         TextSimilaritySearch.save(lib, new File(libsFolder, libName));
         long t4 = System.currentTimeMillis();
         System.out.println("持久化所用时间：" + (t4 - t3) / 1000.0);
         long usedMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-        System.out.println("used memory: " + usedMemory);
+        System.out.println("used memory: " + usedMemory / 1024.0 / 1024.0 / 1024.0 + "G");
     }
 
     public int importJson(File inFile, TextSimilaritySearch lib) throws Exception {
@@ -119,16 +128,16 @@ public class ImportDataTest {
         if (title.endsWith("列表")) {
             return 0;
         }
-        System.out.printf("add %s %s %n", id, title);
+//        System.out.printf("add %s %s %n", id, title);
         int count = 0;
         for (Object segment : jsonObject.getJSONArray("segments")) {
             String segmentS = segment.toString();
-            double w = 0.5;
+            double w = 1;
 //            if (!segmentS.startsWith("=")) {
 //                segmentS = String.format("==基本信息== %s", segmentS);
 //                w = 1;
 //            }
-            String text = title + " " + segmentS;
+            String text = segmentS;
             String thisId = id + "_" + count;
             lib.addText(text, title, thisId, w);
             count++;
@@ -141,8 +150,11 @@ public class ImportDataTest {
 
     @Test
     public void tryImportWikiJsons() throws Exception {
-        importWikiJsons(new File("D:/user_dir/data/wiki_data/big_data_test_segment"),
-                new File("D:/user_dir/data/knowledge_libs"), "big_data_test");
+//        importWikiJsons(new File("D:/user_dir/data/wiki_data/big_data_test_segment"),
+//                new File("D:/user_dir/data/knowledge_libs"), "big_data_test");
+
+        importWikiJsons(new File("D:/user_dir/data/wiki_data/wiki_interesting_segment"),
+                new File("D:/user_dir/data/knowledge_libs"), "wiki_interesting_lib");
 
     }
 
@@ -167,17 +179,16 @@ public class ImportDataTest {
     @Test
     public void tryWikiLibLoadSearch() throws Exception {
         long loadSt = System.currentTimeMillis();
+//        TextSimilaritySearch lib = TextSimilaritySearch.load(
+//                new File("D:/user_dir/data/knowledge_libs", "big_data_test"));
         TextSimilaritySearch lib = TextSimilaritySearch.load(
-                new File("D:/user_dir/data/knowledge_libs", "big_data_test"));
+                new File("D:/user_dir/data/knowledge_libs", "wiki_interesting_lib"));
         long loadEd = System.currentTimeMillis();
         System.out.println("load time: " + (loadEd - loadSt) / 1000.0 + "s");
 
         // 参数重定义
-        lib.changeArgs(1, 1, 0.5,
-                2000, 200, 0.5);
-
-
-        // growRate为了处理小IDF的问题
+        lib.changeArgs(3, 2, 0.5,
+                1, 3, 8, 200);
 
         List<SimilaritySearchResult> resultList = null;
         int times = 500;
@@ -193,18 +204,18 @@ public class ImportDataTest {
 //            resultList = lib.similaritySearch("春眠不觉晓 处处闻啼鸟 ", 15);
 //            resultList = lib.similaritySearch("孟浩然 春眠不觉晓 处处闻啼鸟 ", 15);
 //            resultList = lib.similaritySearch("春晓 春眠不觉晓 处处闻啼鸟 ", 15);
-//            resultList = lib.similaritySearch("金星的质量 ", 10);
+//            resultList = lib.similaritySearch("金星的质量 ", 30);
         }
         long searchEd = System.currentTimeMillis();
         for (SimilaritySearchResult similaritySearchResult : resultList) {
             System.out.println(similaritySearchResult);
         }
-        System.out.println("search time: " + (searchEd - searchSt) / 1000.0 / times + "s");
+        System.out.println("相似搜索时间: " + (searchEd - searchSt) / 1000.0 / times + "s");
         System.out.println("statistics: " + lib.getStatistics());
         // 未去重的Grams Count
-        System.out.println("grams sum: " + (lib.contentGramsCountSum + lib.titleGramsCountSum));
+        System.out.println("avg grams count: " + (lib.contentGramsCountSum + lib.titleGramsCountSum) / lib.textsCount());
         long usedMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-        System.out.println("used memory: " + usedMemory);
+        System.out.println("used memory: " + usedMemory / 1024.0 / 1024.0 / 1024.0 + "G");
 
     }
 

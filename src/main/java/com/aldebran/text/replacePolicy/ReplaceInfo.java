@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
  * @author aldebran
  * @since 2023-06-18
  */
-public class ReplaceInfo {
+public class ReplaceInfo implements Serializable {
 
     public String replacement; // 替代字符串
 

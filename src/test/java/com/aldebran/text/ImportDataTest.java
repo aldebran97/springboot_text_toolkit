@@ -26,23 +26,25 @@ public class ImportDataTest {
         TextSimilaritySearch lib = new TextSimilaritySearch(
                 1.5,
                 1.5,
-                0.51,
+                0.5,
                 1,
                 2,
                 8,
                 50,
                 2, "poems");
 
+        lib.textPreprocess.loadReplaceMapFromFile("./replace.txt");
+
         for (File file : poemsFolder.listFiles()) {
             String title = file.getName().replace(".txt", "");
             String fileContent = FileUtil.readString(file, StandardCharsets.UTF_8);
 //            System.out.printf(" title: %s%n content: %s%n", title, fileContent);
-            lib.addText(fileContent, title, MD5.create().digestHex(title), 0.5);
+            lib.addText(fileContent, title, MD5.create().digestHex(title), 1);
         }
         lib.update();
         // 参数重定义
-//        lib.changeArgs(2, 2, 0.5,
-//                2000, 200, 0.5);
+//        lib.changeArgs(1.5, 1.5, 0.5,
+//                1, 2, 8, 50);
         System.out.println("texts count: " + lib.textsCount());
         TextSimilaritySearch.save(lib, new File(libsFolder, libName));
 
@@ -74,11 +76,12 @@ public class ImportDataTest {
                 2,
                 0.5,
                 1,
-                10,
+                3,
                 8,
                 200,
                 2,
                 libName);
+        lib.textPreprocess.loadReplaceMapFromFile("./replace.txt");
         int c = 0;
         int maxCount = 80 * 10000;
 

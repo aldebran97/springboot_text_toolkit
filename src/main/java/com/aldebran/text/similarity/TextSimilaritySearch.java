@@ -1,7 +1,6 @@
 package com.aldebran.text.similarity;
 
 import com.aldebran.text.ac.AC;
-import com.aldebran.text.ac.ACPlus;
 import com.aldebran.text.util.MMath;
 
 import java.io.*;
@@ -87,9 +86,11 @@ public class TextSimilaritySearch implements Serializable {
 
     public Map<String, Set<String>> titleGramTextIdsMap = new HashMap<>();
 
-    public AC titleAC = new ACPlus();
+    public AC titleAC = new AC();
 
-    public AC contentAC = new ACPlus();
+    public AC contentAC = new AC();
+
+    public TextPreprocess textPreprocess = new TextPreprocess();
 
 
     public TextSimilaritySearch(double criticalContentHitCount,
@@ -213,8 +214,8 @@ public class TextSimilaritySearch implements Serializable {
         fullText.articleWeight = weight;
         fullText.id = id;
 
-        fullText.contentText = TextProcessor.textProcess(content);
-        fullText.titleText = TextProcessor.textProcess(title);
+        fullText.contentText = textPreprocess.textProcess(content);
+        fullText.titleText = textPreprocess.textProcess(title);
 
         fullText.contentText.sourceText = content;
         fullText.titleText.sourceText = title;
@@ -222,8 +223,8 @@ public class TextSimilaritySearch implements Serializable {
         fullText.contentText.gramCountMap = new HashMap<>();
         fullText.titleText.gramCountMap = new HashMap<>();
 
-        List<String> contentGrams = TextProcessor.nGram(fullText.contentText, n);
-        List<String> titleGrams = TextProcessor.nGram(fullText.titleText, n);
+        List<String> contentGrams = textPreprocess.nGram(fullText.contentText, n);
+        List<String> titleGrams = textPreprocess.nGram(fullText.titleText, n);
 
         if (contentGrams.isEmpty() || titleGrams.isEmpty()) {
             // ignore too short text
@@ -284,9 +285,9 @@ public class TextSimilaritySearch implements Serializable {
 
         List<SimilaritySearchResult> result = new LinkedList<>();
 
-        BasicText basicText = TextProcessor.textProcess(text);
+        BasicText basicText = textPreprocess.textProcess(text);
 
-        String gPString = String.join("", TextProcessor.textToGramUnits(basicText));
+        String gPString = String.join("", textPreprocess.textToGramUnits(basicText));
 
         List<AC.MatchResult> contentMRs = contentAC.indexOf(gPString);
         List<AC.MatchResult> titleMRs = titleAC.indexOf(gPString);

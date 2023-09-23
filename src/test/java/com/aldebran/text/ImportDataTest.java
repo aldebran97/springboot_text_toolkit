@@ -31,6 +31,7 @@ public class ImportDataTest {
                 2,
                 8,
                 50,
+                10,
                 2, "poems");
 
         lib.textPreprocess.loadReplaceMapFromFile("./replace.txt");
@@ -44,7 +45,7 @@ public class ImportDataTest {
         lib.update();
         // 参数重定义
 //        lib.changeArgs(1.5, 1.5, 0.5,
-//                1, 2, 8, 50);
+//                1, 2, 8, 50, 10);
         System.out.println("texts count: " + lib.textsCount());
         TextSimilaritySearch.save(lib, new File(libsFolder, libName));
 
@@ -79,6 +80,7 @@ public class ImportDataTest {
                 3,
                 8,
                 200,
+                10,
                 2,
                 libName);
         lib.textPreprocess.loadReplaceMapFromFile("./replace.txt");
@@ -153,11 +155,11 @@ public class ImportDataTest {
 
     @Test
     public void tryImportWikiJsons() throws Exception {
-//        importWikiJsons(new File("D:/user_dir/data/wiki_data/big_data_test_segment"),
-//                new File("D:/user_dir/data/knowledge_libs"), "big_data_test");
+        importWikiJsons(new File("D:/user_dir/data/wiki_data/big_data_test_segment"),
+                new File("D:/user_dir/data/knowledge_libs"), "big_data_test");
 
-        importWikiJsons(new File("D:/user_dir/data/wiki_data/wiki_interesting_segment"),
-                new File("D:/user_dir/data/knowledge_libs"), "wiki_interesting_lib");
+//        importWikiJsons(new File("D:/user_dir/data/wiki_data/wiki_interesting_segment"),
+//                new File("D:/user_dir/data/knowledge_libs"), "wiki_interesting_lib");
 
     }
 
@@ -182,16 +184,16 @@ public class ImportDataTest {
     @Test
     public void tryWikiLibLoadSearch() throws Exception {
         long loadSt = System.currentTimeMillis();
-//        TextSimilaritySearch lib = TextSimilaritySearch.load(
-//                new File("D:/user_dir/data/knowledge_libs", "big_data_test"));
         TextSimilaritySearch lib = TextSimilaritySearch.load(
-                new File("D:/user_dir/data/knowledge_libs", "wiki_interesting_lib"));
+                new File("D:/user_dir/data/knowledge_libs", "big_data_test"));
+//        TextSimilaritySearch lib = TextSimilaritySearch.load(
+//                new File("D:/user_dir/data/knowledge_libs", "wiki_interesting_lib"));
         long loadEd = System.currentTimeMillis();
         System.out.println("load time: " + (loadEd - loadSt) / 1000.0 + "s");
 
         // 参数重定义
         lib.changeArgs(3, 2, 0.5,
-                1, 3, 8, 200);
+                1, 3, 8, 200, 10);
 
         List<SimilaritySearchResult> resultList = null;
         int times = 500;

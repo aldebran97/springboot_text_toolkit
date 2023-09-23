@@ -23,19 +23,20 @@ public class ScoreCalculator implements Serializable {
                        double contentK,
                        double titleK,
                        double gramsAvgCount,
-                       double gramsCountLogA) {
+                       double gramsCountLogA,
+                       double idfGrowthK) {
         this.b = -1;
 
 
         // 标题得分期望
 
-        double titleScoreExpect = textAvgIdf + criticalTitleHitCount * basicGrowthValue;
+        double titleScoreExpect = textAvgIdf + criticalTitleHitCount * basicGrowthValue * idfGrowthK;
 
 
         System.out.println("titleScoreExpect: " + titleScoreExpect);
 
         // 内容得分期望
-        double contentScoreExpect = textAvgIdf + criticalContentHitCount * basicGrowthValue;
+        double contentScoreExpect = textAvgIdf + criticalContentHitCount * basicGrowthValue * idfGrowthK;
 
         System.out.println("contentScoreExpect: " + contentScoreExpect);
 

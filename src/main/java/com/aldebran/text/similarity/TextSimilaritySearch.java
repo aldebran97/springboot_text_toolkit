@@ -31,6 +31,8 @@ public class TextSimilaritySearch implements Serializable {
 
     public double gramsCountLogA = 50; // 使得长度短的匹配文本有一些优势
 
+    public double idfGrowthK = 10; // idf差距明显化
+
 
     /**
      * 用于计算得分的各种统计值
@@ -100,6 +102,7 @@ public class TextSimilaritySearch implements Serializable {
                                 double titleK,
                                 double hitGramsCountLogA,
                                 double gramsCountLogA,
+                                double idfGrowthK,
                                 int n,
                                 String libName) {
         this.criticalContentHitCount = criticalContentHitCount;
@@ -109,6 +112,7 @@ public class TextSimilaritySearch implements Serializable {
         this.titleK = titleK;
         this.hitGramsCountLogA = hitGramsCountLogA;
         this.gramsCountLogA = gramsCountLogA;
+        this.idfGrowthK = idfGrowthK;
         this.n = n;
         this.libName = libName;
 
@@ -182,7 +186,8 @@ public class TextSimilaritySearch implements Serializable {
                            double contentK,
                            double titleK,
                            double hitGramsCountLogA,
-                           double gramsCountLogA) {
+                           double gramsCountLogA,
+                           double idfGrowthK) {
         this.criticalContentHitCount = criticalContentHitCount;
         this.criticalTitleHitCount = criticalTitleHitCount;
         this.criticalScore = criticalScore;
@@ -190,6 +195,7 @@ public class TextSimilaritySearch implements Serializable {
         this.titleK = titleK;
         this.hitGramsCountLogA = hitGramsCountLogA;
         this.gramsCountLogA = gramsCountLogA;
+        this.idfGrowthK = idfGrowthK;
         changeScoreArgs();
 //        generateFullTextsAvgIdf();
     }
@@ -203,9 +209,10 @@ public class TextSimilaritySearch implements Serializable {
                 contentK,
                 titleK,
                 (contentGramsCountSum + titleGramsCountSum) / textsCount(),
-                gramsCountLogA
+                gramsCountLogA,
+                idfGrowthK
         );
-        avgIdfGrowthCalculator.update(basicGrowthValue, gramAvgIdf, gramMinIdf, gramMaxIdf, titleIdfRate);
+        avgIdfGrowthCalculator.update(basicGrowthValue, gramAvgIdf, gramMinIdf, gramMaxIdf, titleIdfRate, idfGrowthK);
     }
 
     public void addText(String content, String title, String id, double weight) {

@@ -3,6 +3,7 @@ package com.aldebran.text;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.crypto.digest.MD5;
 import com.aldebran.text.ac.AC;
+import com.aldebran.text.service.WikiDataSimpleService;
 import com.aldebran.text.similarity.SimilaritySearchResult;
 import com.aldebran.text.similarity.TextLibManagement;
 import com.aldebran.text.similarity.TextSimilaritySearch;
@@ -14,61 +15,13 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.PriorityQueue;
+import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class ImportDataTest {
 
-    public void importPoems(File poemsFolder, File libsFolder, String libName) throws IOException {
-        TextSimilaritySearch lib = new TextSimilaritySearch(
-                1.5,
-                1.5,
-                0.5,
-                1,
-                2,
-                8,
-                50,
-                10,
-                2, "poems");
-
-        lib.textPreprocess.loadReplaceMapFromFile("./replace.txt");
-
-        for (File file : poemsFolder.listFiles()) {
-            String title = file.getName().replace(".txt", "");
-            String fileContent = FileUtil.readString(file, StandardCharsets.UTF_8);
-//            System.out.printf(" title: %s%n content: %s%n", title, fileContent);
-            lib.addText(fileContent, title, MD5.create().digestHex(title), 1);
-        }
-        lib.update();
-        // 参数重定义
-//        lib.changeArgs(1.5, 1.5, 0.5,
-//                1, 2, 8, 50, 10);
-        System.out.println("texts count: " + lib.textsCount());
-        TextSimilaritySearch.save(lib, new File(libsFolder, libName));
-
-//        System.out.println(lib.similaritySearch("介绍古诗《使至塞上》", 5));
-
-        System.out.println(lib.similaritySearch("介绍 诗经 蒹葭", 5));
-    }
-
-    @Test
-    public void tryImportPoems() throws Exception {
-        importPoems(new File("d:/user_dir/data/poem"),
-                new File("d:/user_dir/data/knowledge_libs"), "poems");
-    }
-
-    @Test
-    public void tryPoemsLibLoadSearch() throws Exception {
-        TextSimilaritySearch lib = TextSimilaritySearch.load(
-                new File("C:/user_dir/data/knowledge_libs", "poems"));
-        for (SimilaritySearchResult similaritySearchResult :
-                lib.similaritySearch("介绍古诗《使至塞上》", 5)) {
-            System.out.println(similaritySearchResult);
-        }
-    }
+    WikiDataSimpleService wikiDataSimpleService = new WikiDataSimpleService();
 
     public void importWikiJsons(File jsonsFolder, File libsFolder, String libName) throws Exception {
 
@@ -84,15 +37,16 @@ public class ImportDataTest {
                 2,
                 libName);
         lib.textPreprocess.loadReplaceMapFromFile("./replace.txt");
-        int c = 0;
-        int maxCount = 80 * 10000;
+        int maxCount = 40 * 10000;
 
-        PriorityQueue<File> queue = new PriorityQueue<>(new Comparator<File>() {
-            @Override
-            public int compare(File o1, File o2) {
-                return o1.length() < o2.length() ? -1 : 1;
-            }
-        });
+//        PriorityQueue<File> queue = new PriorityQueue<>(new Comparator<File>() {
+//            @Override
+//            public int compare(File o1, File o2) {
+//                return o1.length() < o2.length() ? -1 : 1;
+//            }
+//        });
+
+        Queue<File> queue = new LinkedList<>();
 
         for (File file : jsonsFolder.listFiles()) {
             queue.add(file);
@@ -104,8 +58,12 @@ public class ImportDataTest {
         while (!queue.isEmpty()) {
             File file = queue.remove();
             if (file.getName().endsWith(".json") && !file.getName().startsWith(".")) {
-//                System.out.println(c + " " + lib.textsCount());
-                c += importJson(file, lib);
+                wikiDataSimpleService.dealJsonSplit(file, new Consumer<List<String>>() {
+                    @Override
+                    public void accept(List<String> strings) {
+                        lib.addText(strings.get(2), strings.get(1), strings.get(0), 1);
+                    }
+                }, 205);
             }
             if (lib.textsCount() > maxCount) break;
         }
@@ -113,45 +71,20 @@ public class ImportDataTest {
         long t2 = System.currentTimeMillis();
         lib.update();
         long t3 = System.currentTimeMillis();
-        System.out.println("入库文章数量: " + lib.textsCount());
-        System.out.println("插入文章所用时间：" + (t2 - t1) / 1000.0);
-        System.out.println("刷新索引所用时间：" + (t3 - t2) / 1000.0);
-//        System.gc();
+        System.out.println("文章数量: " + lib.textsCount());
+        System.out.println("插入文章时间：" + (t2 - t1) / 1000.0);
+        System.out.println("刷新索引时间：" + (t3 - t2) / 1000.0);
 
-        TextSimilaritySearch.save(lib, new File(libsFolder, libName));
+        File saveFile = new File(libsFolder, libName);
+
+        TextSimilaritySearch.save(lib, saveFile);
         long t4 = System.currentTimeMillis();
-        System.out.println("持久化所用时间：" + (t4 - t3) / 1000.0);
+        System.out.println("持久化时间：" + (t4 - t3) / 1000.0);
         long usedMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-        System.out.println("used memory: " + usedMemory / 1024.0 / 1024.0 / 1024.0 + "G");
+        System.out.println("内存占用: " + usedMemory / 1024.0 / 1024.0 / 1024.0 + "G");
+        System.out.println("持久化文件磁盘空间占用：" + saveFile.length() / 1024.0 / 1024 / 1024 + "G");
+
     }
-
-    public int importJson(File inFile, TextSimilaritySearch lib) throws Exception {
-        String fileContent = FileUtil.readString(inFile, StandardCharsets.UTF_8);
-        JSONObject jsonObject = JSON.parseObject(fileContent);
-        String id = jsonObject.getString("id");
-        String title = jsonObject.getString("title");
-        if (title.endsWith("列表")) {
-            return 0;
-        }
-//        System.out.printf("add %s %s %n", id, title);
-        int count = 0;
-        for (Object segment : jsonObject.getJSONArray("segments")) {
-            String segmentS = segment.toString();
-            double w = 1;
-//            if (!segmentS.startsWith("=")) {
-//                segmentS = String.format("==基本信息== %s", segmentS);
-//                w = 1;
-//            }
-            String text = segmentS;
-            String thisId = id + "_" + count;
-            lib.addText(text, title, thisId, w);
-            count++;
-
-//            System.out.printf("add %s %s %s %n", thisId, title, text);
-        }
-        return 1;
-    }
-
 
     @Test
     public void tryImportWikiJsons() throws Exception {
@@ -218,9 +151,9 @@ public class ImportDataTest {
         System.out.println("相似搜索时间: " + (searchEd - searchSt) / 1000.0 / times + "s");
         System.out.println("statistics: " + lib.getStatistics());
         // 未去重的Grams Count
-        System.out.println("avg grams count: " + (lib.contentGramsCountSum + lib.titleGramsCountSum) / lib.textsCount());
+        System.out.println("每个文章的平均grams个数: " + (lib.contentGramsCountSum + lib.titleGramsCountSum) / lib.textsCount());
         long usedMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-        System.out.println("used memory: " + usedMemory / 1024.0 / 1024.0 / 1024.0 + "G");
+        System.out.println("内存占用: " + usedMemory / 1024.0 / 1024.0 / 1024.0 + "G");
 
     }
 

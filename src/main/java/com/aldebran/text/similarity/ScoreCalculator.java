@@ -1,5 +1,6 @@
 package com.aldebran.text.similarity;
 
+import com.aldebran.text.util.CheckUtil;
 import com.aldebran.text.util.MMath;
 
 import java.io.Serializable;
@@ -58,5 +59,13 @@ public class ScoreCalculator implements Serializable {
         return 1.0 / (a * sum + b) + 1;
     }
 
+
+    // 仅测试保存和加载时比较
+    public boolean simpleEquals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ScoreCalculator that = (ScoreCalculator) o;
+        return CheckUtil.closeDouble(a, that.a) && CheckUtil.closeDouble(b, that.b);
+    }
 
 }

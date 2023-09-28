@@ -19,9 +19,12 @@ public class LibBeans {
     @Value("${text.libNames}")
     public String libNames;
 
+    @Value("${test.dataFolder}")
+    public String testDataFolder;
+
     private static Logger logger = LoggerFactory.getLogger(LibBeans.class);
 
-    @Bean
+//    @Bean
     public TextLibManagement textLibManagement() throws Exception {
         logger.info("loading {}", Arrays.asList(libNames.split(",")));
         TextLibManagement textLibManagement = new TextLibManagement(new File(libsFolder));

@@ -1,7 +1,6 @@
-package com.aldebran.text.controller;
+package com.aldebran.web_text.controller;
 
-import com.aldebran.text.service.EfficientService;
-import com.aldebran.text.service.WikiDataSimpleService;
+import com.aldebran.web_text.service.EfficientService;
 import com.aldebran.text.similarity.SimilaritySearchResult;
 import com.aldebran.text.similarity.TextLibManagement;
 import com.alibaba.fastjson.JSON;
@@ -16,16 +15,17 @@ import java.util.List;
 @RequestMapping("/lib")
 public class LibController {
 
-//    @Autowired
+    //    @Autowired
     private TextLibManagement textLibManagement;
 
     @Autowired
-    EfficientService efficientService;
+    private EfficientService efficientService;
 
-    public LibController() {
-        System.out.println("LibController!!!");
-    }
+//    public LibController() {
+//        System.out.println("LibController!!!");
+//    }
 
+    // 相似检索
     @RequestMapping(value = "/similaritySearch", method = {RequestMethod.POST})
     public List<SimilaritySearchResult> similaritySearch(
             @RequestBody String reqBody
@@ -48,15 +48,13 @@ public class LibController {
     }
 
     @RequestMapping("/testEfficient")
-    public void testEfficient(@RequestParam("unit") int unit, @RequestParam("max") int max) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    efficientService.testEfficientMul(unit, max);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
+    public void testEfficient(@RequestParam("unit") int unit, @RequestParam("max") int max,
+                              @RequestParam("start") int start) {
+        new Thread(() -> {
+            try {
+                efficientService.testEfficientMul(start, unit, max);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
         }).start();
     }

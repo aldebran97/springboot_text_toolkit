@@ -1,4 +1,4 @@
-package com.aldebran.text.service;
+package com.aldebran.web_text.service;
 
 import cn.hutool.core.io.FileUtil;
 import com.alibaba.fastjson.JSON;
@@ -29,10 +29,11 @@ public class WikiDataSimpleService {
             return;
         }
         for (Object segment : jsonObject.getJSONArray("segments")) {
-            String segmentS = segment.toString();
-            String text = segmentS;
             String thisId = UUID.randomUUID().toString();
-            consumer.accept(Arrays.asList(thisId, title, text));
+            JSONObject segmentJO = JSON.parseObject(segment.toString());
+            String subTitle = segmentJO.getString("sub_title");
+            String text = segmentJO.getString("text");
+            consumer.accept(Arrays.asList(thisId, title + " " + subTitle, text));
 
 //            System.out.printf("add %s %s %s %n", thisId, title, text);
         }
@@ -51,8 +52,10 @@ public class WikiDataSimpleService {
         System.out.printf("add %s %s %n", id, title);
         StringBuilder sb = new StringBuilder();
         for (Object segment : jsonObject.getJSONArray("segments")) {
-            String segmentS = segment.toString();
-            sb.append(segmentS);
+            JSONObject segmentJO = JSON.parseObject(segment.toString());
+            sb.append(segmentJO.getString("sub_title"));
+            sb.append("\n");
+            sb.append(segmentJO.getString("text"));
             sb.append("\n");
         }
         consumer.accept(Arrays.asList(thisId, title, sb.toString()));
@@ -69,8 +72,10 @@ public class WikiDataSimpleService {
         }
         StringBuilder sb = new StringBuilder();
         for (Object segment : jsonObject.getJSONArray("segments")) {
-            String segmentS = segment.toString();
-            sb.append(segmentS);
+            JSONObject segmentJO = JSON.parseObject(segment.toString());
+            sb.append(segmentJO.getString("sub_title"));
+            sb.append("\n");
+            sb.append(segmentJO.getString("text"));
             sb.append("\n");
         }
         int st = 0;

@@ -1,7 +1,7 @@
-package com.aldebran.text.service;
+package com.aldebran.web_text.service;
 
-import com.aldebran.text.bean.LibBeans;
-import com.aldebran.text.entity.EfficientResult;
+import com.aldebran.web_text.bean.LibBeans;
+import com.aldebran.web_text.entity.EfficientResult;
 import com.aldebran.text.similarity.SimilaritySearchResult;
 import com.aldebran.text.similarity.TextSimilaritySearch;
 import com.alibaba.fastjson.JSON;
@@ -42,10 +42,13 @@ public class EfficientService {
                 2,
                 "test");
         lib.textPreprocess.loadReplaceMapFromFile("./replace.txt");
+        lib.allowMultiThreadsSearch = true;
+        lib.searchDocsUnit = 20000;
         System.out.println(libBeans.testDataFolder);
         File folder = new File(libBeans.testDataFolder);
 
         File[] subFiles = folder.listFiles();
+        System.out.println("inserting");
         long t1 = System.currentTimeMillis();
         for (File file : subFiles) {
             if (file.getName().endsWith(".json") && !file.getName().startsWith(".")) {
@@ -58,16 +61,18 @@ public class EfficientService {
             }
             if (lib.textsCount() >= maxDocumentsCount) break;
         }
+        System.out.println("updating");
         long t2 = System.currentTimeMillis();
         lib.update();
         long t3 = System.currentTimeMillis();
+        System.out.println("saving");
         File file = new File(libFileName);
-        TextSimilaritySearch.save(lib, file);
+        TextSimilaritySearch.save(lib, file, true);
         long t4 = System.currentTimeMillis();
         long usedMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
         EfficientResult efficientResult = new EfficientResult();
         efficientResult.textsCount = lib.textsCount();
-        efficientResult.diskFileSize = file.length() / 1024.0 / 1024 / 1024;
+        efficientResult.diskFileSize = folderSize(file) / 1024.0 / 1024 / 1024;
         efficientResult.takeMemorySize = usedMemory / 1024.0 / 1024 / 1024;
         efficientResult.importTime = (t4 - t1) / 1000.0;
         efficientResult.insertTime = (t2 - t1) / 1000.0;
@@ -75,9 +80,9 @@ public class EfficientService {
         efficientResult.saveTime = (t4 - t3) / 1000.0;
 
         int times = 500;
-
         List<SimilaritySearchResult> resultList = null;
         long searchSt = System.currentTimeMillis();
+        System.out.println("searching, maxDocumentsCount: " + maxDocumentsCount);
         for (int i = 0; i < times; i++) {
             resultList = lib.similaritySearch("木卫二(又名欧罗巴)是木星天然卫星中直径和质量第四大，公转轨道距离木星第六近的一颗。" +
                     "介绍木卫二", 10);
@@ -94,7 +99,7 @@ public class EfficientService {
 
     public void testEfficient2(EfficientResult efficientResult) throws Exception {
         long t1 = System.currentTimeMillis();
-        TextSimilaritySearch lib2 = TextSimilaritySearch.load(new File(libFileName));
+        TextSimilaritySearch lib2 = TextSimilaritySearch.load(new File(libFileName), true);
         long t2 = System.currentTimeMillis();
         efficientResult.loadTime = (t2 - t1) / 1000.0;
     }
@@ -106,12 +111,24 @@ public class EfficientService {
         return efficientResult;
     }
 
-    public void testEfficientMul(int unit, int max) throws Exception {
+    public void testEfficientMul(int start, int unit, int max) throws Exception {
 
-        for (int i = unit; i <= max; i += unit) {
+        for (int i = start; i <= max; i += unit) {
             EfficientResult efficientResult = testEfficientOne(i);
             System.out.println("efficientResult " + JSON.toJSONString(efficientResult));
         }
 
+    }
+
+    public long folderSize(File folder) {
+        if (folder.isFile()) {
+            return folder.length();
+        } else {
+            long all = 0;
+            for (File subFile : folder.listFiles()) {
+                all += folderSize(subFile);
+            }
+            return all;
+        }
     }
 }

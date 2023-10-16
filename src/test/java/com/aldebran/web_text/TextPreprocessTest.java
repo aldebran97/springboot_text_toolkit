@@ -1,4 +1,4 @@
-package com.aldebran.text;
+package com.aldebran.web_text;
 
 import com.aldebran.text.similarity.BasicText;
 import com.aldebran.text.similarity.TextPreprocess;

@@ -1,23 +1,16 @@
-package com.aldebran.text;
+package com.aldebran.web_text;
 
-import cn.hutool.core.io.FileUtil;
-import cn.hutool.crypto.digest.MD5;
 import com.aldebran.text.ac.AC;
-import com.aldebran.text.service.WikiDataSimpleService;
+import com.aldebran.web_text.service.WikiDataSimpleService;
 import com.aldebran.text.similarity.SimilaritySearchResult;
 import com.aldebran.text.similarity.TextLibManagement;
 import com.aldebran.text.similarity.TextSimilaritySearch;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import org.junit.jupiter.api.Test;
 
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 public class ImportDataTest {
 
@@ -77,7 +70,7 @@ public class ImportDataTest {
 
         File saveFile = new File(libsFolder, libName);
 
-        TextSimilaritySearch.save(lib, saveFile);
+        TextSimilaritySearch.save(lib, saveFile,true);
         long t4 = System.currentTimeMillis();
         System.out.println("持久化时间：" + (t4 - t3) / 1000.0);
         long usedMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
@@ -100,7 +93,7 @@ public class ImportDataTest {
     public void acTest() throws Exception {
         long loadSt = System.currentTimeMillis();
         TextSimilaritySearch lib = TextSimilaritySearch.load(
-                new File("D:/user_dir/data/knowledge_libs", "wiki_interesting_lib"));
+                new File("D:/user_dir/data/knowledge_libs", "wiki_interesting_lib"),true);
         long loadEd = System.currentTimeMillis();
         System.out.println("load time: " + (loadEd - loadSt) / 1000.0 + "s");
         List<AC.MatchResult> mrs = null;
@@ -118,7 +111,7 @@ public class ImportDataTest {
     public void tryWikiLibLoadSearch() throws Exception {
         long loadSt = System.currentTimeMillis();
         TextSimilaritySearch lib = TextSimilaritySearch.load(
-                new File("D:/user_dir/data/knowledge_libs", "big_data_test"));
+                new File("D:/user_dir/data/knowledge_libs", "big_data_test"),true);
 //        TextSimilaritySearch lib = TextSimilaritySearch.load(
 //                new File("D:/user_dir/data/knowledge_libs", "wiki_interesting_lib"));
         long loadEd = System.currentTimeMillis();

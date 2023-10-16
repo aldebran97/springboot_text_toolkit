@@ -1,4 +1,4 @@
-package com.aldebran.text.entity;
+package com.aldebran.web_text.entity;
 
 public class EfficientResult {
 
@@ -18,4 +18,5 @@ public class EfficientResult {
     public double diskFileSize; // G
 
     public double takeMemorySize; // G
+
 }

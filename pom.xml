@@ -9,12 +9,13 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.aldebran</groupId>
-    <artifactId>text</artifactId>
+    <artifactId>web_text</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>text</name>
     <description>private text utils</description>
     <properties>
         <java.version>8</java.version>
+
     </properties>
     <dependencies>
         <dependency>
@@ -31,13 +32,21 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.41</version>
+            <version>2.0.40</version>
         </dependency>
 
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
             <version>5.7.16</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.aldebran</groupId>
+            <artifactId>text</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/jars/AC-oracle-jdk-8.jar</systemPath>
         </dependency>
     </dependencies>
 
@@ -47,8 +56,12 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>2.7.12</version>
+                <configuration>
+                    <mainClass>com.aldebran.web_text.TextApplication</mainClass>
+                </configuration>
             </plugin>
         </plugins>
+
     </build>
 
 </project>

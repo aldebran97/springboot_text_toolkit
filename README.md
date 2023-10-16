@@ -2,9 +2,11 @@
 
 ### 一、项目依赖
 
-此项目依赖于实现了文本相似检索，词库匹配的Java项目，GitHub链接链接为：https://github.com/aldebran97/AC （支持Java调用和Python调用）
+【1】此项目依赖于实现了文本相似检索，词库匹配的Java项目，GitHub链接链接为：https://github.com/aldebran97/AC （支持Java调用和Python调用）
 
-如果你使用Java语言或者Python语言调用，并不需要此项目。
+【2】如果你使用Java语言或者Python语言调用，并不需要此项目。
+
+【3】此项目也用作效率测试。
 
 ### 二、项目配置说明
 TODO

@@ -1,7 +1,7 @@
 package com.aldebran.web_text;
 
 
-import com.aldebran.web_text.bean.LibBeans;
+import com.aldebran.web_text.bean.GlobalBeans;
 import com.aldebran.web_text.entity.EfficientResult;
 import com.aldebran.web_text.service.EfficientService;
 import com.aldebran.web_text.service.WikiDataSimpleService;
@@ -13,8 +13,8 @@ public class EfficientServiceTest {
     EfficientService efficientService = new EfficientService();
 
     {
-        efficientService.libBeans = new LibBeans();
-        efficientService.libBeans.testDataFolder = "D:/user_dir/data/wiki_data/processed_data_segment";
+        efficientService.globalBeans = new GlobalBeans();
+        efficientService.globalBeans.testDataFolder = "D:/user_dir/data/wiki_data/processed_data_segment";
         efficientService.wikiDataSimpleService = new WikiDataSimpleService();
     }
 

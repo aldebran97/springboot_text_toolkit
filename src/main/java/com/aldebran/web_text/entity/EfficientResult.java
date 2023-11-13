@@ -19,4 +19,8 @@ public class EfficientResult {
 
     public double takeMemorySize; // G
 
+    public int gramCount;
+
+    public double acSearchTime; // ms
+
 }

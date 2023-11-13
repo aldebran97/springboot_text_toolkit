@@ -1,6 +1,7 @@
 package com.aldebran.web_text.service;
 
-import com.aldebran.web_text.bean.LibBeans;
+import com.aldebran.text.ac.AC;
+import com.aldebran.web_text.bean.GlobalBeans;
 import com.aldebran.web_text.entity.EfficientResult;
 import com.aldebran.text.similarity.SimilaritySearchResult;
 import com.aldebran.text.similarity.TextSimilaritySearch;
@@ -25,7 +26,7 @@ public class EfficientService {
     public WikiDataSimpleService wikiDataSimpleService;
 
     @Autowired
-    public LibBeans libBeans;
+    public GlobalBeans globalBeans;
 
     public String libFileName = "./test-lib";
 
@@ -43,9 +44,9 @@ public class EfficientService {
                 "test");
         lib.textPreprocess.loadReplaceMapFromFile("./replace.txt");
         lib.allowMultiThreadsSearch = true;
-        lib.searchDocsUnit = 20000;
-        System.out.println(libBeans.testDataFolder);
-        File folder = new File(libBeans.testDataFolder);
+        lib.searchDocsUnit = 15000;
+        System.out.println(globalBeans.testDataFolder);
+        File folder = new File(globalBeans.testDataFolder);
 
         File[] subFiles = folder.listFiles();
         System.out.println("inserting");
@@ -79,16 +80,31 @@ public class EfficientService {
         efficientResult.updateTime = (t3 - t2) / 1000.0;
         efficientResult.saveTime = (t4 - t3) / 1000.0;
 
+        String query = "木卫二(又名欧罗巴)是木星天然卫星中直径和质量第四大，公转轨道距离木星第六近的一颗。" +
+                "介绍木卫二";
+
         int times = 500;
         List<SimilaritySearchResult> resultList = null;
         long searchSt = System.currentTimeMillis();
         System.out.println("searching, maxDocumentsCount: " + maxDocumentsCount);
         for (int i = 0; i < times; i++) {
-            resultList = lib.similaritySearch("木卫二(又名欧罗巴)是木星天然卫星中直径和质量第四大，公转轨道距离木星第六近的一颗。" +
-                    "介绍木卫二", 10);
+            resultList = lib.similaritySearch(query, 10);
         }
         long searchEd = System.currentTimeMillis();
         efficientResult.searchTime = (searchEd - searchSt) * 1.0 / times;
+
+        long acStart = System.currentTimeMillis();
+        List<AC.MatchResult> mrs = null;
+        for (int i = 0; i < times; i++) {
+            mrs = lib.titleAC.indexOf(query);
+            mrs = lib.contentAC.indexOf(query);
+        }
+        long acEnd = System.currentTimeMillis();
+        efficientResult.gramCount = lib.gramIdfMap.size();
+        efficientResult.acSearchTime = (acEnd - acStart) * 1.0 / times;
+
+        System.out.println(mrs);
+
 
         for (SimilaritySearchResult similaritySearchResult : resultList) {
             System.out.println(similaritySearchResult);
@@ -107,7 +123,7 @@ public class EfficientService {
 
     public EfficientResult testEfficientOne(int maxDocumentsCount) throws Exception {
         EfficientResult efficientResult = testEfficient1(maxDocumentsCount);
-        testEfficient2(efficientResult);
+//        testEfficient2(efficientResult);
         return efficientResult;
     }
 

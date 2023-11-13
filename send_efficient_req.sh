@@ -1,0 +1,1 @@
+curl 'localhost:10004/lib/testEfficient?unit=1000000&max=40000000&start=10000000'

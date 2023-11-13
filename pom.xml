@@ -46,7 +46,7 @@
             <artifactId>text</artifactId>
             <version>0.0.1-SNAPSHOT</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/jars/AC-oracle-jdk-8.jar</systemPath>
+            <systemPath>${project.basedir}/jars/AC-jdk21.jar</systemPath>
         </dependency>
     </dependencies>
 
@@ -58,6 +58,8 @@
                 <version>2.7.12</version>
                 <configuration>
                     <mainClass>com.aldebran.web_text.TextApplication</mainClass>
+                    <fork>true</fork>
+                    <includeSystemScope>true</includeSystemScope>
                 </configuration>
             </plugin>
         </plugins>

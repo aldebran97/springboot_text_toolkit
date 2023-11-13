@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController()
 @RequestMapping("/lib")
-public class LibController {
+public class SimilarityLibController {
 
     //    @Autowired
     private TextLibManagement textLibManagement;
@@ -21,9 +21,9 @@ public class LibController {
     @Autowired
     private EfficientService efficientService;
 
-//    public LibController() {
-//        System.out.println("LibController!!!");
-//    }
+    public SimilarityLibController() {
+        System.out.println("LibController Created");
+    }
 
     // 相似检索
     @RequestMapping(value = "/similaritySearch", method = {RequestMethod.POST})

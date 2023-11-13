@@ -10,7 +10,7 @@ import java.io.File;
 import java.util.Arrays;
 
 @Configuration
-public class LibBeans {
+public class GlobalBeans {
 
     @Value("${text.libsFolder}")
     public String libsFolder;
@@ -21,9 +21,9 @@ public class LibBeans {
     @Value("${test.dataFolder}")
     public String testDataFolder;
 
-    private static Logger logger = LoggerFactory.getLogger(LibBeans.class);
+    private static Logger logger = LoggerFactory.getLogger(GlobalBeans.class);
 
-//    @Bean
+    //    @Bean
     public TextLibManagement textLibManagement() throws Exception {
         logger.info("loading {}", Arrays.asList(libNames.split(",")));
         TextLibManagement textLibManagement = new TextLibManagement(new File(libsFolder));
